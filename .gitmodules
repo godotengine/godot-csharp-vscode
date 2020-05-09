@@ -1,0 +1,9 @@
+[submodule "thirdparty/debugger-libs"]
+	path = thirdparty/debugger-libs
+	url = https://github.com/mono/debugger-libs.git
+[submodule "thirdparty/nrefactory"]
+	path = thirdparty/nrefactory
+	url = https://github.com/icsharpcode/NRefactory.git
+[submodule "thirdparty/vscode-mono-debug"]
+	path = thirdparty/vscode-mono-debug
+	url = https://github.com/neikeq/vscode-mono-debug.git

@@ -1,0 +1,17 @@
+.vscode/**
+.vscode-test/**
+out/test/**
+src/**
+.gitignore
+vsc-extension-quickstart.md
+**/tsconfig.json
+**/tslint.json
+**/*.map
+**/*.ts
+node_modules/**
+thirdparty/**
+GodotDebugSession/**
+!GodotDebugSession/bin/Release/*
+!node_modules/vscode-debugprotocol/**/*
+!node_modules/promise-socket/**/*
+!node_modules/chokidar/**/*

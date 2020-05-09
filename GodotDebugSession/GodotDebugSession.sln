@@ -1,0 +1,46 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GodotDebugSession", "GodotDebugSession.csproj", "{52059825-2921-4EFB-B6C3-350303F587EE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mono.Debugging.Soft", "..\thirdparty\debugger-libs\Mono.Debugging.Soft\Mono.Debugging.Soft.csproj", "{DE40756E-57F6-4AF2-B155-55E3A88CCED8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mono.Debugging", "..\thirdparty\debugger-libs\Mono.Debugging\Mono.Debugging.csproj", "{90C99ADB-7D4B-4EB4-98C2-40BD1B14C7D2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mono.Debugger.Soft", "..\thirdparty\debugger-libs\Mono.Debugger.Soft\Mono.Debugger.Soft.csproj", "{372E8E3E-29D5-4B4D-88A2-4711CD628C4E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ICSharpCode.NRefactory", "..\thirdparty\nrefactory\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj", "{3B2A5653-EC97-4001-BB9B-D90F1AF2C371}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ICSharpCode.NRefactory.CSharp", "..\thirdparty\nrefactory\ICSharpCode.NRefactory.CSharp\ICSharpCode.NRefactory.CSharp.csproj", "{53DCA265-3C3C-42F9-B647-F72BA678122B}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{52059825-2921-4EFB-B6C3-350303F587EE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{52059825-2921-4EFB-B6C3-350303F587EE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{52059825-2921-4EFB-B6C3-350303F587EE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{52059825-2921-4EFB-B6C3-350303F587EE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DE40756E-57F6-4AF2-B155-55E3A88CCED8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DE40756E-57F6-4AF2-B155-55E3A88CCED8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DE40756E-57F6-4AF2-B155-55E3A88CCED8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DE40756E-57F6-4AF2-B155-55E3A88CCED8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{90C99ADB-7D4B-4EB4-98C2-40BD1B14C7D2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{90C99ADB-7D4B-4EB4-98C2-40BD1B14C7D2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{90C99ADB-7D4B-4EB4-98C2-40BD1B14C7D2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{90C99ADB-7D4B-4EB4-98C2-40BD1B14C7D2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{372E8E3E-29D5-4B4D-88A2-4711CD628C4E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{372E8E3E-29D5-4B4D-88A2-4711CD628C4E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{372E8E3E-29D5-4B4D-88A2-4711CD628C4E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{372E8E3E-29D5-4B4D-88A2-4711CD628C4E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3B2A5653-EC97-4001-BB9B-D90F1AF2C371}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3B2A5653-EC97-4001-BB9B-D90F1AF2C371}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3B2A5653-EC97-4001-BB9B-D90F1AF2C371}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3B2A5653-EC97-4001-BB9B-D90F1AF2C371}.Release|Any CPU.Build.0 = Release|Any CPU
+		{53DCA265-3C3C-42F9-B647-F72BA678122B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{53DCA265-3C3C-42F9-B647-F72BA678122B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{53DCA265-3C3C-42F9-B647-F72BA678122B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{53DCA265-3C3C-42F9-B647-F72BA678122B}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal

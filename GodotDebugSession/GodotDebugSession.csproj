@@ -1,0 +1,85 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+    <PropertyGroup>
+        <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+        <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+        <ProjectGuid>{52059825-2921-4EFB-B6C3-350303F587EE}</ProjectGuid>
+        <OutputType>Exe</OutputType>
+        <AppDesignerFolder>Properties</AppDesignerFolder>
+        <RootNamespace>GodotDebugSession</RootNamespace>
+        <AssemblyName>GodotDebugSession</AssemblyName>
+        <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+        <FileAlignment>512</FileAlignment>
+    </PropertyGroup>
+    <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+        <PlatformTarget>AnyCPU</PlatformTarget>
+        <DebugSymbols>true</DebugSymbols>
+        <DebugType>full</DebugType>
+        <Optimize>false</Optimize>
+        <OutputPath>bin\Debug\</OutputPath>
+        <DefineConstants>DEBUG;TRACE</DefineConstants>
+        <ErrorReport>prompt</ErrorReport>
+        <WarningLevel>4</WarningLevel>
+    </PropertyGroup>
+    <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+        <PlatformTarget>AnyCPU</PlatformTarget>
+        <DebugType>pdbonly</DebugType>
+        <Optimize>true</Optimize>
+        <OutputPath>bin\Release\</OutputPath>
+        <DefineConstants>TRACE</DefineConstants>
+        <ErrorReport>prompt</ErrorReport>
+        <WarningLevel>4</WarningLevel>
+    </PropertyGroup>
+    <ItemGroup>
+        <Reference Include="Microsoft.CSharp" />
+        <Reference Include="System" />
+        <Reference Include="System.Core" />
+        <Reference Include="System.Data" />
+        <Reference Include="System.Xml" />
+    </ItemGroup>
+    <ItemGroup>
+        <Compile Include="..\thirdparty\vscode-mono-debug\src\DebugSession.cs">
+          <Link>DebugSession.cs</Link>
+        </Compile>
+        <Compile Include="..\thirdparty\vscode-mono-debug\src\Handles.cs">
+          <Link>Handles.cs</Link>
+        </Compile>
+        <Compile Include="..\thirdparty\vscode-mono-debug\src\MonoDebugSession.cs">
+          <Link>MonoDebugSession.cs</Link>
+        </Compile>
+        <Compile Include="..\thirdparty\vscode-mono-debug\src\Protocol.cs">
+          <Link>Protocol.cs</Link>
+        </Compile>
+        <Compile Include="..\thirdparty\vscode-mono-debug\src\Utilities.cs">
+          <Link>Utilities.cs</Link>
+        </Compile>
+        <Compile Include="GodotDebuggerSession.cs" />
+        <Compile Include="GodotDebuggerStartInfo.cs" />
+        <Compile Include="GodotDebugSession.cs" />
+        <Compile Include="GodotMessageHandler.cs" />
+        <Compile Include="Logger.cs" />
+        <Compile Include="MonoDebug.cs" />
+        <Compile Include="Program.cs" />
+        <Compile Include="Properties\AssemblyInfo.cs" />
+    </ItemGroup>
+    <ItemGroup>
+      <ProjectReference Include="..\thirdparty\debugger-libs\Mono.Debugger.Soft\Mono.Debugger.Soft.csproj">
+        <Project>{372e8e3e-29d5-4b4d-88a2-4711cd628c4e}</Project>
+        <Name>Mono.Debugger.Soft</Name>
+      </ProjectReference>
+      <ProjectReference Include="..\thirdparty\debugger-libs\Mono.Debugging.Soft\Mono.Debugging.Soft.csproj">
+        <Project>{de40756e-57f6-4af2-b155-55e3a88cced8}</Project>
+        <Name>Mono.Debugging.Soft</Name>
+      </ProjectReference>
+      <ProjectReference Include="..\thirdparty\debugger-libs\Mono.Debugging\Mono.Debugging.csproj">
+        <Project>{90c99adb-7d4b-4eb4-98c2-40bd1b14c7d2}</Project>
+        <Name>Mono.Debugging</Name>
+      </ProjectReference>
+    </ItemGroup>
+    <ItemGroup>
+      <PackageReference Include="GodotTools.IdeMessaging" Version="1.1.0" />
+      <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+    </ItemGroup>
+    <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>
