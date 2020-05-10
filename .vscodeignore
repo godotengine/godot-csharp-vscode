@@ -1,6 +1,8 @@
+.gitmodules
+.gitignore
 .vscode/**
 .vscode-test/**
-out/test/**
+out/**
 src/**
 .gitignore
 vsc-extension-quickstart.md
@@ -9,9 +11,8 @@ vsc-extension-quickstart.md
 **/*.map
 **/*.ts
 node_modules/**
+webpack.config.js
 thirdparty/**
 GodotDebugSession/**
 !GodotDebugSession/bin/Release/*
-!node_modules/vscode-debugprotocol/**/*
-!node_modules/promise-socket/**/*
-!node_modules/chokidar/**/*
+!dist/**

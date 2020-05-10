@@ -1,30 +1,34 @@
-SOLUTION_DIR = "./GodotDebugSession/"
+SOLUTION_DIR="./GodotDebugSession/"
 
-GODOT_DEBUG_SESSION_RELEASE = "$(SOLUTION_DIR)/bin/Release/GodotDebugSession.exe"
-GODOT_DEBUG_SESSION_DEBUG = "$(SOLUTION_DIR)/bin/Debug/GodotDebugSession.exe"
+GODOT_DEBUG_SESSION="./dist/GodotDebugSession/GodotDebugSession.exe"
 
-all: vsix
+all: package
 	@echo "vsix created"
 
-vsix: build
+package: build
 	./node_modules/.bin/vsce package
 
 publish: build
 	./node_modules/.bin/vsce publish
 
-build: $(GODOT_DEBUG_SESSION_RELEASE) tsc
+build: $(GODOT_DEBUG_SESSION) tsc
 	@echo "build finished"
 
-build-debug: $(GODOT_DEBUG_SESSION_DEBUG) tsc
+build-debug: $(GODOT_DEBUG_SESSION)-debug tsc-debug
 	@echo "build finished"
 
 tsc:
 	node_modules/.bin/tsc -p ./
+	webpack --mode production
 
-$(GODOT_DEBUG_SESSION_RELEASE):
+tsc-debug:
+	node_modules/.bin/tsc -p ./
+	webpack --mode development
+
+$(GODOT_DEBUG_SESSION):
 	msbuild /p:Configuration=Release $(SOLUTION_DIR)/GodotDebugSession.sln
 
-$(GODOT_DEBUG_SESSION_DEBUG):
+$(GODOT_DEBUG_SESSION)-debug:
 	msbuild /p:Configuration=Debug $(SOLUTION_DIR)/GodotDebugSession.sln
 
 clean:

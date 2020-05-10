@@ -3,7 +3,7 @@
 	"displayName": "C# Tools for Godot",
 	"description": "Debugger and utilities for working with Godot C# projects",
 	"icon": "icon.png",
-	"version": "0.1.1",
+	"version": "0.1.2",
 	"publisher": "neikeq",
 	"license": "MIT",
 	"repository": {
@@ -21,11 +21,12 @@
 		"workspaceContains:project.godot",
 		"onDebugResolve:godot"
 	],
-	"main": "./out/extension.js",
+	"main": "./dist/extension.bundled.js",
 	"scripts": {
 		"vscode:prepublish": "make build",
 		"compile": "make build",
 		"compile-tsc": "make tsc",
+		"compile-tsc-debug": "make tsc-debug",
 		"watch": "tsc -watch -p ./"
 	},
 	"dependencies": {
@@ -43,11 +44,14 @@
 		"@types/node": "^10.12.21",
 		"@types/vscode": "^1.28.0",
 		"glob": "^7.1.4",
+		"make": "^0.8.1",
 		"mocha": "^6.1.4",
-		"typescript": "^3.3.1",
+		"ts-loader": "^7.0.3",
 		"tslint": "^5.12.1",
+		"typescript": "^3.3.1",
 		"vsce": "^1.20.0",
-		"make": "^0.8.1"
+		"webpack": "^4.43.0",
+		"webpack-cli": "^3.3.11"
 	},
 	"breakpoints": [
 		{
@@ -68,7 +72,7 @@
 						"fsharp"
 					]
 				},
-				"program": "./GodotDebugSession/bin/Release/GodotDebugSession.exe",
+				"program": "./dist/GodotDebugSession/GodotDebugSession.exe",
 				"osx": {
 					"runtime": "mono"
 				},

@@ -10,9 +10,9 @@
 				"--extensionDevelopmentPath=${workspaceFolder}"
 			],
 			"outFiles": [
-				"${workspaceFolder}/out/**/*.js"
+				"${workspaceFolder}/dist/**/*.js"
 			],
-			"preLaunchTask": "npm: compile-tsc"
+			"preLaunchTask": "npm: compile-tsc-debug"
 		}
 	]
 }
