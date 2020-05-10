@@ -14,5 +14,4 @@ node_modules/**
 webpack.config.js
 thirdparty/**
 GodotDebugSession/**
-!GodotDebugSession/bin/Release/*
 !dist/**
