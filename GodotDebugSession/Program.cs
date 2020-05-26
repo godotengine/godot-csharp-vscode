@@ -20,6 +20,10 @@ namespace GodotDebugSession
             {
                 Logger.LogError(ex);
             }
+            finally
+            {
+                Logger.Close();
+            }
         }
     }
 }

@@ -1,5 +1,6 @@
 import * as vscode from 'vscode';
 import { Client, MessageStatus } from './godot-tools-messaging/client';
+import { fixPathForGodot } from './godot-utils';
 
 enum CompletionKind {
     InputActions = 0,
@@ -49,7 +50,7 @@ export class GodotCompletionProvider implements vscode.CompletionItemProvider {
             return undefined;
         }
 
-        let filePath = document.uri.fsPath;
+        let filePath = fixPathForGodot(document.uri.fsPath);
 
         let [lines, character] = this.getPrefixLines(document, position);
         let linePrefix = lines.substr(0, character);

@@ -2,6 +2,7 @@ import * as vscode from 'vscode';
 import { DebugProtocol } from 'vscode-debugprotocol';
 import { Client, Peer, MessageContent, MessageStatus, ILogger, IMessageHandler } from './godot-tools-messaging/client';
 import * as completion_provider from './completion-provider';
+import { fixPathForGodot } from './godot-utils';
 import * as path from 'path';
 import * as fs from 'fs';
 
@@ -91,7 +92,13 @@ export function activate(context: vscode.ExtensionContext) {
 		let godotProjectFile = path.join(rootPath, 'project.godot');
 
 		return fs.existsSync(godotProjectFile);
-	})!.uri.path;
+	})?.uri.fsPath;
+
+	if (godotProjectDir === undefined) {
+		return;
+	}
+
+	godotProjectDir = fixPathForGodot(godotProjectDir);
 
 	client = new Client('VisualStudioCode', godotProjectDir, new MessageHandler(), new Logger());
 	client.start();
@@ -129,7 +136,9 @@ class GodotMonoDebugConfigProvider implements vscode.DebugConfigurationProvider 
 			debugConfiguration.__exceptionOptions = convertToExceptionOptions(getModel());
 		}
 
-		debugConfiguration['godotProjectDir'] = folder?.uri.fsPath;
+		if (folder !== undefined) {
+			debugConfiguration['godotProjectDir'] = folder.uri.fsPath;
+		}
 
 		return debugConfiguration;
 	}

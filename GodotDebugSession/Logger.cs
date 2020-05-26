@@ -13,43 +13,41 @@ namespace GodotDebugSession
         private static readonly string LogPath = $"{ThisAppPathWithoutExtension}.log";
         internal static readonly string NewLogPath = $"{ThisAppPathWithoutExtension}.new.log";
 
-        private static StreamWriter NewWriter() => new StreamWriter(LogPath, append: true, Encoding.UTF8);
+        private static StreamWriter _writer;
 
-        private static void Log(StreamWriter writer, string message)
-        {
-            writer.WriteLine($"{DateTime.Now:HH:mm:ss.ffffff}: {message}");
-        }
+        private static StreamWriter Writer =>
+            _writer ?? (_writer = new StreamWriter(LogPath, append: true, Encoding.UTF8));
 
-        public static void Log(string message)
+        private static void WriteLog(string message)
         {
-            using (var writer = NewWriter())
+            try
             {
-                Log(writer, message);
+                var writer = Writer;
+                writer.WriteLine($"{DateTime.Now:HH:mm:ss.ffffff}: {message}");
+                writer.Flush();
+            }
+            catch (IOException e)
+            {
+                Console.Error.WriteLine(e);
             }
         }
 
-        public static void LogError(string message)
-        {
-            using (var writer = NewWriter())
-            {
-                Log(writer, message);
-            }
-        }
+        public static void Log(string message) =>
+            WriteLog(message);
 
-        public static void LogError(string message, Exception ex)
-        {
-            using (var writer = NewWriter())
-            {
-                Log(writer, $"{message}\n{ex}");
-            }
-        }
+        public static void LogError(string message) =>
+            WriteLog(message);
 
-        public static void LogError(Exception ex)
+        public static void LogError(string message, Exception ex) =>
+            WriteLog($"{message}\n{ex}");
+
+        public static void LogError(Exception ex) =>
+            WriteLog(ex.ToString());
+
+        public static void Close()
         {
-            using (var writer = NewWriter())
-            {
-                Log(writer, ex.ToString());
-            }
+            _writer?.Close();
+            _writer = null;
         }
     }
 }

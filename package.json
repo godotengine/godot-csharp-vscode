@@ -27,7 +27,10 @@
 		"compile": "make build",
 		"compile-tsc": "make tsc",
 		"compile-tsc-debug": "make tsc-debug",
-		"watch": "tsc -watch -p ./"
+		"watch": "tsc -watch -p ./",
+		"webpack": "webpack --mode production",
+		"webpack-debug": "webpack --mode development",
+		"webpack-watch": "webpack --mode development --watch"
 	},
 	"dependencies": {
 		"chokidar": "^3.4.0",
@@ -46,7 +49,7 @@
 		"glob": "^7.1.4",
 		"make": "^0.8.1",
 		"mocha": "^6.1.4",
-		"ts-loader": "^7.0.3",
+		"ts-loader": "^7.0.5",
 		"tslint": "^5.12.1",
 		"typescript": "^3.3.1",
 		"vsce": "^1.20.0",

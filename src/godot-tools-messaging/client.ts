@@ -4,7 +4,6 @@ import * as path from 'path';
 import * as chokidar from 'chokidar';
 import PromiseSocket from 'promise-socket';
 import { Disposable } from 'vscode';
-import { throws } from 'assert';
 
 async function timeout(ms: number) {
     return new Promise(resolve => {
@@ -35,7 +34,8 @@ class CustomSocket extends PromiseSocket<net.Socket> {
             let indexOfLineBreak = this.buffer.indexOf('\n');
 
             if (indexOfLineBreak >= 0) {
-                let line = this.buffer.substring(0, indexOfLineBreak);
+                let hasCR = indexOfLineBreak !== 0 && this.buffer.charAt(indexOfLineBreak - 1) === '\r';
+                let line = this.buffer.substring(0, hasCR ? indexOfLineBreak - 1 : indexOfLineBreak);
                 this.buffer = this.buffer.substring(indexOfLineBreak + 1);
                 return line;
             }
@@ -269,24 +269,46 @@ export class Client implements Disposable {
             return;
         }
 
-        const socket = new CustomSocket();
+        const attempts = 3;
+        let attemptsLeft = attempts;
 
-        this.logger.logInfo('Connecting to Godot Ide Server');
+        while (attemptsLeft-- > 0) {
+            if (attemptsLeft < (attempts - 1)) {
+                this.logger.logInfo(`Waiting 3 seconds... (${attemptsLeft + 1} attempts left)`);
+                await timeout(5000);
+            }
 
-        await socket.connect(this.metadata!.port, 'localhost');
+            const socket = new CustomSocket();
 
-        this.logger.logInfo('Connection open with Godot Ide Server');
+            this.logger.logInfo('Connecting to Godot Ide Server');
 
-        this.peer = new Peer(socket, new ClientHandshake(), this.messageHandler, this.logger);
+            try {
+                await socket.connect(this.metadata!.port, 'localhost');
+            }
+            catch (err) {
+                this.logger.logError('Failed to connect to Godot Ide Server', err);
+                continue;
+            }
 
-        if (!await this.peer.doHandshake(this.identity)) {
-            this.logger.logError('Handshake failed');
+            this.logger.logInfo('Connection open with Godot Ide Server');
+
+            this.peer?.dispose();
+            this.peer = new Peer(socket, new ClientHandshake(), this.messageHandler, this.logger);
+
+            if (!await this.peer.doHandshake(this.identity)) {
+                this.logger.logError('Handshake failed');
+                this.peer.dispose();
+                continue;
+            }
+
+            await this.peer.process();
+
+            this.logger.logInfo('Connection closed with Ide Client');
+
             return;
         }
 
-        await this.peer.process();
-
-        this.logger.logInfo('Connection closed with Ide Client');
+        this.logger.logInfo(`Failed to connect to Godot Ide Server after ${attempts} attempts`);
     }
 
     startWatching(): void {

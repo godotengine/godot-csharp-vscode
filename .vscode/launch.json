@@ -12,7 +12,7 @@
 			"outFiles": [
 				"${workspaceFolder}/dist/**/*.js"
 			],
-			"preLaunchTask": "npm: compile-tsc-debug"
+			"preLaunchTask": "npm: webpack-debug"
 		}
 	]
 }
