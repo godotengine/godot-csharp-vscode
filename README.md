@@ -18,6 +18,16 @@ Debugger and utilities for working with Godot C# projects in VSCode.
 - Currently Signal suggestions are only provided using the information from the project build
 results, not from the information in the edited document. This will change in the future.
 
+## VSCode installation and configuration
+
+- Install via extensions marketplace by searching for `neikeq.godot-csharp-vscode`.
+- Once installed, you have to create the debug configurations from the Debug panel like this:
+![Create launch.json file](https://user-images.githubusercontent.com/7718100/86488909-dc60d680-bd62-11ea-89df-feb4ff9dd0f2.png)
+- Choose C# Godot
+![Choose C# Godot](https://user-images.githubusercontent.com/7718100/86488910-dcf96d00-bd62-11ea-8d2f-51a9a6f06c07.png)
+- It will generate the following. The `Play in Editor` option works out of the box. For the Launch you need to fix the path to point to the Godot Editor executable path you're using:
+[!Fix editor path](https://user-images.githubusercontent.com/7718100/86488912-dd920380-bd62-11ea-8b3a-91689dc8e629.png)
+
 ## Debugger launch configurations
 
 By default the extension creates the following launch configurations:
