@@ -4,8 +4,10 @@ using System.Net.Sockets;
 using System.Net;
 using System.Threading.Tasks;
 using GodotTools.IdeMessaging.Requests;
+using Medallion.Shell;
 using Mono.Debugging.Client;
 using Mono.Debugging.Soft;
+using System.Collections.Generic;
 
 namespace GodotDebugSession
 {
@@ -50,7 +52,7 @@ namespace GodotDebugSession
                             messagingClient.Start();
                             await messagingClient.AwaitConnected();
                             var response = await messagingClient.SendRequest<DebugPlayResponse>(
-                                new DebugPlayRequest {DebuggerHost = host, DebuggerPort = assignedDebugPort});
+                                new DebugPlayRequest { DebuggerHost = host, DebuggerPort = assignedDebugPort });
 
                             if (response.Status != GodotTools.IdeMessaging.MessageStatus.Ok)
                             {
@@ -89,33 +91,30 @@ namespace GodotDebugSession
 
                         // Launch Godot to run the game and connect to our remote debugger
 
-                        var processStartInfo = new ProcessStartInfo(godotStartInfo.GodotExecutablePath)
+                        var args = new List<string>()
                         {
-                            Arguments = $"--path {workingDir} --remote-debug {host}:{remoteDebugPort}",
-                            WorkingDirectory = workingDir,
-                            RedirectStandardOutput = true,
-                            RedirectStandardError = true,
-                            UseShellExecute = false,
-                            CreateNoWindow = true
+                            "--path", workingDir,
+                            "--remote-debug", $"{host}:{remoteDebugPort}",
                         };
+                        args.AddRange(godotStartInfo.ExecutableArguments);
 
-                        // Tells Godot to connect to the mono debugger we just started
-                        processStartInfo.EnvironmentVariables["GODOT_MONO_DEBUGGER_AGENT"] =
-                            "--debugger-agent=transport=dt_socket" +
-                            $",address={host}:{assignedDebugPort}" +
-                            ",server=n";
+                        var process = Command.Run(godotStartInfo.GodotExecutablePath, args, options =>
+                        {
+                            options.WorkingDirectory(workingDir);
+                            options.ThrowOnError(true);
 
-                        var process = new Process {StartInfo = processStartInfo, EnableRaisingEvents = true};
-                        process.OutputDataReceived += (sender, e) =>
-                            godotStartInfo.ProcessOutputListener.ReceiveStdOut(e.Data);
-                        process.ErrorDataReceived += (sender, e) =>
-                            godotStartInfo.ProcessOutputListener.ReceiveStdErr(e.Data);
+                            // Tells Godot to connect to the mono debugger we just started
+                            options.EnvironmentVariable("GODOT_MONO_DEBUGGER_AGENT",
+                                    "--debugger-agent=transport=dt_socket" +
+                                    $",address={host}:{assignedDebugPort}" +
+                                    ",server=n");
+                        })
+                            .RedirectTo(godotStartInfo.ProcessOutputListener.GetStdOutTextWriter())
+                            .RedirectStandardErrorTo(godotStartInfo.ProcessOutputListener.GetStdErrTextWriter());
 
                         try
                         {
-                            process.Start();
-                            process.BeginOutputReadLine();
-                            process.BeginErrorReadLine();
+                            await process.Task;
                         }
                         catch (Exception e)
                         {
@@ -124,7 +123,7 @@ namespace GodotDebugSession
                             return;
                         }
 
-                        OnDebuggerOutput(false, $"Godot PID:{process.Id}{Environment.NewLine}");
+                        OnDebuggerOutput(false, $"Godot PID:{process.ProcessId}{Environment.NewLine}");
                     }
                     catch (Exception e)
                     {

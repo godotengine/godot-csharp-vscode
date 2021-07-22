@@ -69,7 +69,7 @@ namespace GodotDebugSession
                     IPAddress address = Utilities.ResolveIPAddress(host);
                     if (address == null)
                     {
-                        SendErrorResponse(response, 3013, "Invalid address '{host}'.", new {host});
+                        SendErrorResponse(response, 3013, "Invalid address '{host}'.", new { host });
                         return;
                     }
 
@@ -85,11 +85,13 @@ namespace GodotDebugSession
                 _debuggeeKilled = false;
 
                 string godotExecutablePath = (string)args.executable;
+                string[] executableArguments = args.executableArguments?.ToObject<string[]>() ?? Array.Empty<string>();
 
                 string godotProjectDir = (string)args.godotProjectDir;
 
-                var startInfo = new GodotDebuggerStartInfo(executionType, godotExecutablePath,
-                    processOutputListener: this, listenArgs) {WorkingDirectory = godotProjectDir};
+                var startInfo = new GodotDebuggerStartInfo(executionType,
+                    godotExecutablePath, executableArguments, processOutputListener: this, listenArgs)
+                { WorkingDirectory = godotProjectDir };
 
                 _session.Run(startInfo, _debuggerSessionOptions);
 
