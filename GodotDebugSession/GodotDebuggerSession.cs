@@ -1,5 +1,6 @@
 using System;
 using System.Diagnostics;
+using System.Linq;
 using System.Net.Sockets;
 using System.Net;
 using System.Threading.Tasks;
@@ -89,9 +90,11 @@ namespace GodotDebugSession
 
                         // Launch Godot to run the game and connect to our remote debugger
 
+                        string extraArgs = string.Join(" ", godotStartInfo.ExecutableArguments.Select(arg => arg.Contains(" ") ? $"\"{arg}\"" : arg));
+
                         var processStartInfo = new ProcessStartInfo(godotStartInfo.GodotExecutablePath)
                         {
-                            Arguments = $"--path {workingDir} --remote-debug {host}:{remoteDebugPort}",
+                            Arguments = $"--path {workingDir} --remote-debug {host}:{remoteDebugPort} {extraArgs}",
                             WorkingDirectory = workingDir,
                             RedirectStandardOutput = true,
                             RedirectStandardError = true,

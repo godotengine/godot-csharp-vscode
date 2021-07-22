@@ -85,11 +85,12 @@ namespace GodotDebugSession
                 _debuggeeKilled = false;
 
                 string godotExecutablePath = (string)args.executable;
+                string[] executableArguments = args.executableArguments?.ToObject<string[]>() ?? Array.Empty<string>();
 
                 string godotProjectDir = (string)args.godotProjectDir;
 
                 var startInfo = new GodotDebuggerStartInfo(executionType, godotExecutablePath,
-                    processOutputListener: this, listenArgs) {WorkingDirectory = godotProjectDir};
+                    executableArguments, processOutputListener: this, listenArgs) {WorkingDirectory = godotProjectDir};
 
                 _session.Run(startInfo, _debuggerSessionOptions);
 
