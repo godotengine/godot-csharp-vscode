@@ -3,6 +3,7 @@ import * as fs from 'fs-extra';
 import {getVscodeFolder} from './vscode-utils';
 import {Configuration} from './configuration';
 import {AssetsGenerator, createDebugConfigurationsArray} from './assets-generator';
+import {findGodotExecutablePath} from './godot-utils';
 
 export class GodotMonoDebugConfigProvider implements vscode.DebugConfigurationProvider {
 	private godotProjectPath: string;
@@ -31,7 +32,8 @@ export class GodotMonoDebugConfigProvider implements vscode.DebugConfigurationPr
 		// Add a tasks.json
 		await generator.addTasksJsonIfNecessary();
 
-		return createDebugConfigurationsArray();
+		const godotPath = await findGodotExecutablePath();
+		return createDebugConfigurationsArray(godotPath);
 	}
 
 	public async resolveDebugConfiguration(

@@ -6,7 +6,7 @@ import * as assets_provider from './assets-provider';
 import { fixPathForGodot } from './godot-utils';
 import { findProjectFiles, ProjectLocation, promptForProject } from './project-select';
 
-let client: Client;
+export let client: Client;
 let codeCompletionProvider: vscode.Disposable;
 let debugConfigProvider: vscode.Disposable;
 let statusBarItem: vscode.StatusBarItem;

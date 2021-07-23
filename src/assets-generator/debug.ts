@@ -2,19 +2,20 @@ import * as vscode from 'vscode';
 import * as jsonc from 'jsonc-parser';
 import * as fs from 'fs-extra';
 import {getFormattingOptions, replaceCommentPropertiesWithComments, updateJsonWithComments} from '../json-utils';
+import {findGodotExecutablePath} from '../godot-utils';
 
-export function createLaunchConfiguration():
+export function createLaunchConfiguration(godotExecutablePath: string | undefined):
 	{version: string, configurations: vscode.DebugConfiguration[]}
 {
 	return {
 		version: '2.0.0',
-		configurations: _createDebugConfigurations(),
+		configurations: _createDebugConfigurations(godotExecutablePath),
 	};
 }
 
-export function createDebugConfigurationsArray(): vscode.DebugConfiguration[]
+export function createDebugConfigurationsArray(godotExecutablePath: string | undefined): vscode.DebugConfiguration[]
 {
-	const configurations = _createDebugConfigurations();
+	const configurations = _createDebugConfigurations(godotExecutablePath);
 
 	// Remove comments
 	configurations.forEach(configuration => {
@@ -33,11 +34,11 @@ export function createDebugConfigurationsArray(): vscode.DebugConfiguration[]
 	return configurations;
 }
 
-function _createDebugConfigurations(): vscode.DebugConfiguration[]
+function _createDebugConfigurations(godotExecutablePath: string | undefined): vscode.DebugConfiguration[]
 {
 	return [
 		createPlayInEditorDebugConfiguration(),
-		createLaunchDebugConfiguration(),
+		createLaunchDebugConfiguration(godotExecutablePath),
 		createAttachDebugConfiguration(),
 	];
 }
@@ -52,15 +53,16 @@ export function createPlayInEditorDebugConfiguration(): vscode.DebugConfiguratio
 	};
 }
 
-export function createLaunchDebugConfiguration(): vscode.DebugConfiguration
+export function createLaunchDebugConfiguration(godotExecutablePath: string | undefined): vscode.DebugConfiguration
 {
+	godotExecutablePath = godotExecutablePath ?? '<insert-godot-executable-path-here>';
 	return {
 		name: 'Launch',
 		type: 'godot-mono',
 		request: 'launch',
 		mode: 'executable',
 		preLaunchTask: 'build',
-		executable: '<insert-godot-executable-path-here>',
+		executable: godotExecutablePath,
 		'OS-COMMENT1': 'See which arguments are available here:',
 		'OS-COMMENT2': 'https://docs.godotengine.org/en/stable/getting_started/editor/command_line_tutorial.html',
 		executableArguments: [
@@ -83,7 +85,8 @@ export function createAttachDebugConfiguration()
 
 export async function addLaunchJsonIfNecessary(launchJsonPath: string): Promise<void>
 {
-	const launchConfiguration = createLaunchConfiguration();
+	const godotExecutablePath = await findGodotExecutablePath();
+	const launchConfiguration = createLaunchConfiguration(godotExecutablePath);
 
 	const formattingOptions = getFormattingOptions();
 

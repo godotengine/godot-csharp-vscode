@@ -2,20 +2,22 @@ import * as tasks from 'vscode-tasks';
 import * as jsonc from 'jsonc-parser';
 import * as fs from 'fs-extra';
 import {getFormattingOptions, replaceCommentPropertiesWithComments, updateJsonWithComments} from '../json-utils';
+import {findGodotExecutablePath} from '../godot-utils';
 
-export function createTasksConfiguration(): tasks.TaskConfiguration
+export function createTasksConfiguration(godotExecutablePath: string | undefined): tasks.TaskConfiguration
 {
 	return {
 		version: '2.0.0',
-		tasks: [createBuildTaskDescription()],
+		tasks: [createBuildTaskDescription(godotExecutablePath)],
 	};
 }
 
-export function createBuildTaskDescription(): tasks.TaskDescription
+export function createBuildTaskDescription(godotExecutablePath: string | undefined): tasks.TaskDescription
 {
+	godotExecutablePath = godotExecutablePath ?? '<insert-godot-executable-path-here>';
 	return {
 		label: 'build',
-		command: '<insert-godot-executable-path-here>',
+		command: godotExecutablePath,
 		type: 'process',
 		args: ['--build-solutions', '--path', '${workspaceRoot}', '--no-window', '-q'],
 		problemMatcher: '$msCompile',
@@ -24,7 +26,8 @@ export function createBuildTaskDescription(): tasks.TaskDescription
 
 export async function addTasksJsonIfNecessary(tasksJsonPath: string): Promise<void>
 {
-	const tasksConfiguration = createTasksConfiguration();
+	const godotExecutablePath = await findGodotExecutablePath();
+	const tasksConfiguration = createTasksConfiguration(godotExecutablePath);
 
 	const formattingOptions = getFormattingOptions();
 

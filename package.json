@@ -39,6 +39,7 @@
 		"chokidar": "^3.4.0",
 		"fs-extra": "^10.0.0",
 		"jsonc-parser": "^3.0.0",
+		"lookpath": "^1.2.1",
 		"promise-socket": "^6.0.3",
 		"vscode-debugprotocol": "^1.40.0"
 	},
@@ -71,6 +72,16 @@
 		}
 	],
 	"contributes": {
+		"configuration": {
+			"title": "Godot Mono",
+			"properties": {
+				"godot.csharp.executablePath": {
+					"type": "string",
+					"default": null,
+					"description": "Path to the Godot engine executable."
+				}
+			}
+		},
 		"commands": [
 			{
 				"command": "godot.csharp.generateAssets",

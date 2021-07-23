@@ -21,6 +21,8 @@ const DEFAULT_EXCEPTIONS: ExceptionConfigurations = {
 export class Configuration {
 	public static Value: Configuration = new Configuration();
 
+	public godotExecutablePath: string | undefined;
+
 	public exceptionOptions: ExceptionConfigurations = DEFAULT_EXCEPTIONS;
 
 	public get exceptionOptionsForDebug(): DebugProtocol.ExceptionOptions[] {
@@ -30,7 +32,7 @@ export class Configuration {
 	private constructor(){
 		this.read();
 		vscode.workspace.onDidChangeConfiguration(e => {
-			if (e.affectsConfiguration('mono-debug'))
+			if (e.affectsConfiguration('godot.csharp') || e.affectsConfiguration('mono-debug'))
 			{
 				this.read();
 			}
@@ -39,9 +41,11 @@ export class Configuration {
 
 	public read()
 	{
+		const godotConfiguration = vscode.workspace.getConfiguration('godot.csharp');
 		// Too lazy so we're re-using mono-debug extension settings for now...
 		const monoConfiguration = vscode.workspace.getConfiguration('mono-debug');
 
+		this.godotExecutablePath = godotConfiguration.get('executablePath');
 		this.exceptionOptions = monoConfiguration.get('exceptionOptions', DEFAULT_EXCEPTIONS);
 	}
 
