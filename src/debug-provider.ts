@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
-import * as configuration from './configuration';
 import * as fs from 'fs-extra';
 import {getVscodeFolder} from './vscode-utils';
+import {Configuration} from './configuration';
 import {AssetsGenerator, createDebugConfigurationsArray} from './assets-generator';
 
 export class GodotMonoDebugConfigProvider implements vscode.DebugConfigurationProvider {
@@ -41,7 +41,7 @@ export class GodotMonoDebugConfigProvider implements vscode.DebugConfigurationPr
 	): Promise<vscode.DebugConfiguration | undefined>
 	{
 		if (!debugConfiguration.__exceptionOptions) {
-			debugConfiguration.__exceptionOptions = configuration.convertToExceptionOptions(configuration.getModel());
+			debugConfiguration.__exceptionOptions = Configuration.Value.exceptionOptionsForDebug;
 		}
 
 		debugConfiguration['godotProjectDir'] = this.godotProjectPath;

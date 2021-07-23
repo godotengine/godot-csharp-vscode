@@ -1,9 +1,6 @@
 import * as vscode from 'vscode';
 import { DebugProtocol } from 'vscode-debugprotocol';
 
-// Too lazy so we're re-using mono-debug extension settings for now...
-const configuration = vscode.workspace.getConfiguration('mono-debug');
-
 type ExceptionConfigurations = { [exception: string]: DebugProtocol.ExceptionBreakMode; };
 
 const DEFAULT_EXCEPTIONS: ExceptionConfigurations = {
@@ -21,24 +18,41 @@ const DEFAULT_EXCEPTIONS: ExceptionConfigurations = {
 	'System.TypeInitializationException': 'never',
 };
 
-export function getModel(): ExceptionConfigurations {
-	let model = DEFAULT_EXCEPTIONS;
-	if (configuration) {
-		const exceptionOptions = configuration.get('exceptionOptions');
-		if (exceptionOptions) {
-			model = <ExceptionConfigurations>exceptionOptions;
-		}
-	}
-	return model;
-}
+export class Configuration {
+	public static Value: Configuration = new Configuration();
 
-export function convertToExceptionOptions(model: ExceptionConfigurations): DebugProtocol.ExceptionOptions[] {
-	const exceptionItems: DebugProtocol.ExceptionOptions[] = [];
-	for (let exception in model) {
-		exceptionItems.push({
-			path: [{ names: [exception] }],
-			breakMode: model[exception],
+	public exceptionOptions: ExceptionConfigurations = DEFAULT_EXCEPTIONS;
+
+	public get exceptionOptionsForDebug(): DebugProtocol.ExceptionOptions[] {
+		return this.convertToExceptionOptions(this.exceptionOptions);
+	}
+
+	private constructor(){
+		this.read();
+		vscode.workspace.onDidChangeConfiguration(e => {
+			if (e.affectsConfiguration('mono-debug'))
+			{
+				this.read();
+			}
 		});
 	}
-	return exceptionItems;
+
+	public read()
+	{
+		// Too lazy so we're re-using mono-debug extension settings for now...
+		const monoConfiguration = vscode.workspace.getConfiguration('mono-debug');
+
+		this.exceptionOptions = monoConfiguration.get('exceptionOptions', DEFAULT_EXCEPTIONS);
+	}
+
+	private convertToExceptionOptions(model: ExceptionConfigurations): DebugProtocol.ExceptionOptions[] {
+		const exceptionItems: DebugProtocol.ExceptionOptions[] = [];
+		for (let exception in model) {
+			exceptionItems.push({
+				path: [{ names: [exception] }],
+				breakMode: model[exception],
+			});
+		}
+		return exceptionItems;
+	}
 }
