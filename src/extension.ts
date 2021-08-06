@@ -3,6 +3,7 @@ import { Client, Peer, MessageContent, MessageStatus, ILogger, IMessageHandler }
 import * as completion_provider from './completion-provider';
 import * as debug_provider from './debug-provider';
 import * as assets_provider from './assets-provider';
+import { getWorkspaceScenes } from './workspace-utils';
 import { fixPathForGodot } from './godot-utils';
 import { findProjectFiles, ProjectLocation, promptForProject } from './project-select';
 
@@ -126,10 +127,16 @@ export async function activate(context: vscode.ExtensionContext) {
 		await assets_provider.addAssets();
 	});
 	context.subscriptions.push(generateAssetsCommand);
+
+	// Setup get launch scene command
+	const getLaunchSceneCommand = vscode.commands.registerCommand('godot.csharp.getLaunchScene', () => {
+		return vscode.window.showQuickPick(getWorkspaceScenes(client?.getGodotProjectDir()));
+	});
+	context.subscriptions.push(getLaunchSceneCommand);
 }
 
 function setupProject(project: ProjectLocation, context: vscode.ExtensionContext) {
-	const statusBarPath:string = project.relativeProjectPath === '.' ? './'  : project.relativeProjectPath;
+	const statusBarPath: string = project.relativeProjectPath === '.' ? './' : project.relativeProjectPath;
 	statusBarItem.text = `$(folder) Godot Project: ${statusBarPath}`;
 	// Setup client
 	if (client !== undefined) {

@@ -39,6 +39,7 @@ function _createDebugConfigurations(godotExecutablePath: string | undefined): vs
 	return [
 		createPlayInEditorDebugConfiguration(),
 		createLaunchDebugConfiguration(godotExecutablePath),
+		createLaunchDebugConfiguration(godotExecutablePath, true),
 		createAttachDebugConfiguration(),
 	];
 }
@@ -53,11 +54,11 @@ export function createPlayInEditorDebugConfiguration(): vscode.DebugConfiguratio
 	};
 }
 
-export function createLaunchDebugConfiguration(godotExecutablePath: string | undefined): vscode.DebugConfiguration
+export function createLaunchDebugConfiguration(godotExecutablePath: string | undefined, canSelectScene: boolean = false): vscode.DebugConfiguration
 {
 	godotExecutablePath = godotExecutablePath ?? '<insert-godot-executable-path-here>';
 	return {
-		name: 'Launch',
+		name: `Launch${canSelectScene ? ' (Select Scene)' : ''}`,
 		type: 'godot-mono',
 		request: 'launch',
 		mode: 'executable',
@@ -68,6 +69,7 @@ export function createLaunchDebugConfiguration(godotExecutablePath: string | und
 		executableArguments: [
 			'--path',
 			'${workspaceRoot}',
+			...(canSelectScene ? ['${command:SelectLaunchScene}'] : []),
 		],
 	};
 }
