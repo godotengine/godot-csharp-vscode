@@ -53,6 +53,7 @@
         <Compile Include="..\thirdparty\vscode-mono-debug\src\Utilities.cs">
           <Link>Utilities.cs</Link>
         </Compile>
+        <Compile Include="ActionTextWriter.cs" />
         <Compile Include="GodotDebuggerSession.cs" />
         <Compile Include="GodotDebuggerStartInfo.cs" />
         <Compile Include="GodotDebugSession.cs" />
@@ -79,6 +80,7 @@
     <ItemGroup>
       <PackageReference Include="GodotTools.IdeMessaging" Version="1.1.0" />
       <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+      <PackageReference Include="MedallionShell" Version="1.6.2" />
     </ItemGroup>
     <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
