@@ -3,10 +3,12 @@ import { DebugProtocol } from 'vscode-debugprotocol';
 import { Client, Peer, MessageContent, MessageStatus, ILogger, IMessageHandler } from './godot-tools-messaging/client';
 import * as completion_provider from './completion-provider';
 import { fixPathForGodot } from './godot-utils';
-import * as path from 'path';
-import * as fs from 'fs';
+import { findProjectFiles, ProjectLocation, promptForProject } from './project-select'
 
 let client: Client;
+let codeCompletionProvider: vscode.Disposable;
+let debugConfigProvider: vscode.Disposable;
+let statusBarItem: vscode.StatusBarItem;
 
 class Logger implements ILogger {
 	logDebug(message: string): void {
@@ -86,40 +88,77 @@ class MessageHandler implements IMessageHandler {
 	}
 }
 
-export function activate(context: vscode.ExtensionContext) {
-	let godotProjectDir = vscode.workspace.workspaceFolders?.find((workspaceFolder) => {
-		let rootPath = workspaceFolder.uri.fsPath;
-		let godotProjectFile = path.join(rootPath, 'project.godot');
-
-		return fs.existsSync(godotProjectFile);
-	})?.uri.fsPath;
-
-	if (godotProjectDir === undefined) {
+export async function activate(context: vscode.ExtensionContext) {
+	let foundProjects: ProjectLocation[] = await findProjectFiles();
+	// No project.godot files found. The extension doesn't need to do anything more.
+	if (foundProjects.length == 0) {
 		return;
 	}
 
-	godotProjectDir = fixPathForGodot(godotProjectDir);
+	// Setup the status bar / project selector and prompt for project if necessary
+	const commandId = 'csharpGodot.selectProject';
+	statusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 0);
+	statusBarItem.command = commandId;
+	statusBarItem.show();
+	context.subscriptions.push(statusBarItem);
+	context.subscriptions.push(vscode.commands.registerCommand(commandId, async () => {
+		let project = await promptForProject();  // project.godot
+		if (project !== undefined) {
+			setupProject(project, context);
+		}
+	}));
 
-	client = new Client('VisualStudioCode', godotProjectDir, new MessageHandler(), new Logger());
+	// One project.godot files found. Use it.
+	if (foundProjects.length == 1) {
+		setupProject(foundProjects[0], context);
+	}
+	// Multiple project.godot files found. Prompt the user for which one they want to use.
+	else {
+		let project = await promptForProject();
+		if (project !== undefined) {
+			setupProject(project, context);
+		}
+	}
+}
+
+function setupProject(project: ProjectLocation, context: vscode.ExtensionContext) {
+	let statusBarPath:string = project.relativeProjectPath === '.' ? './'  : project.relativeProjectPath;
+	statusBarItem.text = `$(folder) Godot Project: ${statusBarPath}`;
+	// Setup client
+	if (client !== undefined) {
+		client.dispose();
+	}
+	client = new Client(
+		'VisualStudioCode',
+		fixPathForGodot(project.absoluteProjectPath),
+		new MessageHandler(),
+		new Logger()
+	);
 	client.start();
 
-	const debugConfigProvider = vscode.debug.registerDebugConfigurationProvider(
+	// Setup debug provider
+	if (debugConfigProvider) {
+		debugConfigProvider.dispose();
+	}
+	debugConfigProvider = vscode.debug.registerDebugConfigurationProvider(
 		'godot-mono',
-		new GodotMonoDebugConfigProvider()
+		new GodotMonoDebugConfigProvider(project.absoluteProjectPath)
 	);
+	context.subscriptions.push(debugConfigProvider);
 
+	// Setup completion provider
 	// There's no way to extend OmniSharp without having to provide our own language server.
 	// That will be a big task so for now we will provide this basic completion provider.
-	const codeCompletionProvider = vscode.languages.registerCompletionItemProvider(
+	if (codeCompletionProvider !== undefined) {
+		codeCompletionProvider.dispose();
+	}
+	// Create client, create provider, register and subscribe provider
+	codeCompletionProvider = vscode.languages.registerCompletionItemProvider(
 		'csharp', new completion_provider.GodotCompletionProvider(client),
 		// Trigger characters
 		'(', '"', ',', ' '
 	);
-
-	context.subscriptions.push(
-		debugConfigProvider,
-		codeCompletionProvider
-	);
+	context.subscriptions.push(codeCompletionProvider);
 }
 
 export function deactivate() {
@@ -127,6 +166,12 @@ export function deactivate() {
 }
 
 class GodotMonoDebugConfigProvider implements vscode.DebugConfigurationProvider {
+	godotProjectPath: string;
+
+	constructor(godotProjectPath: string) {
+		this.godotProjectPath = godotProjectPath;
+	}
+
 	public async resolveDebugConfiguration(
 		folder: vscode.WorkspaceFolder | undefined,
 		debugConfiguration: vscode.DebugConfiguration,
@@ -135,11 +180,7 @@ class GodotMonoDebugConfigProvider implements vscode.DebugConfigurationProvider 
 		if (!debugConfiguration.__exceptionOptions) {
 			debugConfiguration.__exceptionOptions = convertToExceptionOptions(getModel());
 		}
-
-		if (folder !== undefined) {
-			debugConfiguration['godotProjectDir'] = folder.uri.fsPath;
-		}
-
+		debugConfiguration['godotProjectDir'] = this.godotProjectPath;
 		return debugConfiguration;
 	}
 }
