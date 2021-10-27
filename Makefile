@@ -18,18 +18,18 @@ build-debug: $(GODOT_DEBUG_SESSION)-debug tsc-debug
 	@echo "build finished"
 
 tsc:
-	node_modules/.bin/tsc -p ./
-	webpack --mode production
+	./node_modules/.bin/tsc -p ./
+	./node_modules/.bin/webpack --mode production
 
 tsc-debug:
-	node_modules/.bin/tsc -p ./
-	webpack --mode development
+	./node_modules/.bin/tsc -p ./
+	./node_modules/.bin/webpack --mode development
 
 $(GODOT_DEBUG_SESSION):
-	msbuild /p:Configuration=Release $(SOLUTION_DIR)/GodotDebugSession.sln
+	msbuild /p:Configuration=Release /restore $(SOLUTION_DIR)/GodotDebugSession.sln
 
 $(GODOT_DEBUG_SESSION)-debug:
-	msbuild /p:Configuration=Debug $(SOLUTION_DIR)/GodotDebugSession.sln
+	msbuild /p:Configuration=Debug /restore $(SOLUTION_DIR)/GodotDebugSession.sln
 
 clean:
 	msbuild /t:Clean $(SOLUTION_DIR)/GodotDebugSession.sln
