@@ -18,7 +18,7 @@
 		"Other"
 	],
 	"activationEvents": [
-		"workspaceContains:project.godot",
+		"workspaceContains:**/project.godot",
 		"onDebugResolve:godot"
 	],
 	"main": "./dist/extension.bundled.js",
