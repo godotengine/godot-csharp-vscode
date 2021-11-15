@@ -21,7 +21,8 @@
 		"workspaceContains:**/project.godot",
 		"onDebugResolve:godot",
 		"onCommand:godot.csharp.selectProject",
-		"onCommand:godot.csharp.generateAssets"
+		"onCommand:godot.csharp.generateAssets",
+		"onCommand:godot.csharp.getLaunchScene"
 	],
 	"main": "./dist/extension.bundled.js",
 	"scripts": {
@@ -87,6 +88,11 @@
 				"command": "godot.csharp.generateAssets",
 				"title": "Generate Assets for Build and Debug",
 				"category": "C# Godot"
+			},
+			{
+				"command": "godot.csharp.selectProject",
+				"title": "Select Project",
+				"category": "C# Godot"
 			}
 		],
 		"breakpoints": [
@@ -112,6 +118,9 @@
 				"linux": {
 					"runtime": "mono"
 				},
+				"variables": {
+					"SelectLaunchScene": "godot.csharp.getLaunchScene"
+				},
 				"configurationSnippets": [
 					{
 						"label": "C# Godot: Play in Editor Configuration",
@@ -136,6 +145,23 @@
 							"executableArguments": [
 								"--path",
 								"${workspaceRoot}"
+							]
+						}
+					},
+					{
+						"label": "C# Godot: Launch Configuration (Select Scene)",
+						"description": "Launch a C# Godot App with a debugger.",
+						"body": {
+							"name": "Launch (Select Scene)",
+							"type": "godot-mono",
+							"request": "launch",
+							"mode": "executable",
+							"preLaunchTask": "build",
+							"executable": "${1:<insert-godot-executable-path-here>}",
+							"executableArguments": [
+								"--path",
+								"${workspaceRoot}",
+								"${command:SelectLaunchScene}"
 							]
 						}
 					},

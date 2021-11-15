@@ -205,6 +205,7 @@ export class Peer implements Disposable {
 
 export class Client implements Disposable {
     identity: string;
+    projectDir: string;
     projectMetadataDir: string;
     metaFilePath: string;
     messageHandler: IMessageHandler;
@@ -223,9 +224,14 @@ export class Client implements Disposable {
         this.messageHandler = messageHandler;
         this.logger = logger;
 
+        this.projectDir = godotProjectDir;
         this.projectMetadataDir = path.join(godotProjectDir, '.mono', 'metadata');
 
         this.metaFilePath = path.join(this.projectMetadataDir, GodotIdeMetadata.defaultFileName);
+    }
+
+    getGodotProjectDir(): string {
+        return this.projectDir;
     }
 
     isConnected(): boolean {
