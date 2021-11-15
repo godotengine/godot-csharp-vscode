@@ -286,7 +286,7 @@ export class Client implements Disposable {
                 await socket.connect(this.metadata!.port, 'localhost');
             }
             catch (err) {
-                this.logger.logError('Failed to connect to Godot Ide Server', err);
+                this.logger.logError('Failed to connect to Godot Ide Server', err as Error);
                 continue;
             }
 

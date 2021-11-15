@@ -19,7 +19,9 @@
 	],
 	"activationEvents": [
 		"workspaceContains:**/project.godot",
-		"onDebugResolve:godot"
+		"onDebugResolve:godot",
+		"onCommand:godot.csharp.selectProject",
+		"onCommand:godot.csharp.generateAssets"
 	],
 	"main": "./dist/extension.bundled.js",
 	"scripts": {
@@ -33,7 +35,11 @@
 		"webpack-watch": "webpack --mode development --watch"
 	},
 	"dependencies": {
+		"async-file": "^2.0.2",
 		"chokidar": "^3.4.0",
+		"fs-extra": "^10.0.0",
+		"jsonc-parser": "^3.0.0",
+		"lookpath": "^1.2.1",
 		"promise-socket": "^6.0.3",
 		"vscode-debugprotocol": "^1.40.0"
 	},
@@ -42,10 +48,11 @@
 		"ms-vscode.mono-debug"
 	],
 	"devDependencies": {
+		"@types/fs-extra": "^9.0.12",
 		"@types/glob": "^7.1.1",
 		"@types/mocha": "^5.2.6",
-		"@types/node": "^10.12.21",
-		"@types/vscode": "^1.28.0",
+		"@types/node": "^16.4.1",
+		"@types/vscode": "^1.62.0",
 		"glob": "^7.1.4",
 		"make": "^0.8.1",
 		"mocha": "^6.1.4",
@@ -65,16 +72,39 @@
 		}
 	],
 	"contributes": {
+		"configuration": {
+			"title": "Godot Mono",
+			"properties": {
+				"godot.csharp.executablePath": {
+					"type": "string",
+					"default": null,
+					"description": "Path to the Godot engine executable."
+				}
+			}
+		},
+		"commands": [
+			{
+				"command": "godot.csharp.generateAssets",
+				"title": "Generate Assets for Build and Debug",
+				"category": "C# Godot"
+			}
+		],
+		"breakpoints": [
+			{
+				"language": "csharp"
+			},
+			{
+				"language": "fsharp"
+			}
+		],
 		"debuggers": [
 			{
 				"type": "godot-mono",
 				"label": "C# Godot",
-				"enableBreakpointsFor": {
-					"languageIds": [
-						"csharp",
-						"fsharp"
-					]
-				},
+				"languages": [
+					"csharp",
+					"fsharp"
+				],
 				"program": "./dist/GodotDebugSession/GodotDebugSession.exe",
 				"osx": {
 					"runtime": "mono"
@@ -82,30 +112,43 @@
 				"linux": {
 					"runtime": "mono"
 				},
-				"initialConfigurations": [
+				"configurationSnippets": [
 					{
-						"name": "Play in Editor",
-						"type": "godot-mono",
-						"mode": "playInEditor",
-						"request": "launch"
+						"label": "C# Godot: Play in Editor Configuration",
+						"description": "Launch a C# Godot App from the open editor with a debugger.",
+						"body": {
+							"name": "Play in Editor",
+							"type": "godot-mono",
+							"mode": "playInEditor",
+							"request": "launch"
+						}
 					},
 					{
-						"name": "Launch",
-						"type": "godot-mono",
-						"request": "launch",
-						"mode": "executable",
-						"executable": "${workspaceRoot}/Godot.exe",
-						"executableArguments": [
-							"--path",
-							"${workspaceRoot}"
-						]
+						"label": "C# Godot: Launch Configuration",
+						"description": "Launch a C# Godot App with a debugger.",
+						"body": {
+							"name": "Launch",
+							"type": "godot-mono",
+							"request": "launch",
+							"mode": "executable",
+							"preLaunchTask": "build",
+							"executable": "${1:<insert-godot-executable-path-here>}",
+							"executableArguments": [
+								"--path",
+								"${workspaceRoot}"
+							]
+						}
 					},
 					{
-						"name": "Attach",
-						"type": "godot-mono",
-						"request": "attach",
-						"address": "localhost",
-						"port": 23685
+						"label": "C# Godot: Attach Configuration",
+						"description": "Attach a debugger to a C# Godot App.",
+						"body": {
+							"name": "Attach",
+							"type": "godot-mono",
+							"request": "attach",
+							"address": "localhost",
+							"port": 23685
+						}
 					}
 				],
 				"configurationAttributes": {
