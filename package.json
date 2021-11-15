@@ -88,6 +88,11 @@
 				"command": "godot.csharp.generateAssets",
 				"title": "Generate Assets for Build and Debug",
 				"category": "C# Godot"
+			},
+			{
+				"command": "godot.csharp.selectProject",
+				"title": "Select Project",
+				"category": "C# Godot"
 			}
 		],
 		"breakpoints": [
