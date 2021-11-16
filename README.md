@@ -22,11 +22,16 @@ results, not from the information in the edited document. This will change in th
 
 - Install via extensions marketplace by searching for `neikeq.godot-csharp-vscode`.
 - Once installed, you have to create the debug configurations from the Debug panel like this:
+
 ![Create launch.json file](https://user-images.githubusercontent.com/7718100/86488909-dc60d680-bd62-11ea-89df-feb4ff9dd0f2.png)
-- Choose C# Godot
+
+- Choose C# Godot:
+
 ![Choose C# Godot](https://user-images.githubusercontent.com/7718100/86488910-dcf96d00-bd62-11ea-8d2f-51a9a6f06c07.png)
+
 - It will generate the following. The `Play in Editor` option works out of the box. For the Launch you need to fix the path to point to the Godot Editor executable path you're using:
-[!Fix editor path](https://user-images.githubusercontent.com/7718100/86488912-dd920380-bd62-11ea-8b3a-91689dc8e629.png)
+
+![Fix editor path](https://user-images.githubusercontent.com/7718100/86488912-dd920380-bd62-11ea-8b3a-91689dc8e629.png)
 
 ## Debugger launch configurations
 
@@ -38,7 +43,7 @@ By default the extension creates the following launch configurations:
 - **Launch**\
   Launches the game with a Godot executable for debugging in VSCode.\
   Before using this option, the value of the _"executable"_ property must be changed
-  to a path that points to the Godot executable that will be launched launched.
+  to a path that points to the Godot executable that will be launched.
 - **Attach**\
   Attaches to a running Godot instance that was configured to listen for a debugger connection.
 
