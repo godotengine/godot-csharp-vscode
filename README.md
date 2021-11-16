@@ -20,18 +20,57 @@ results, not from the information in the edited document. This will change in th
 
 ## VSCode installation and configuration
 
-- Install via extensions marketplace by searching for `neikeq.godot-csharp-vscode`.
-- Once installed, you have to create the debug configurations from the Debug panel like this:
+Install via extensions marketplace by searching for [`neikeq.godot-csharp-vscode`](https://marketplace.visualstudio.com/items?itemName=neikeq.godot-csharp-vscode).
 
-![Create launch.json file](https://user-images.githubusercontent.com/7718100/86488909-dc60d680-bd62-11ea-89df-feb4ff9dd0f2.png)
+### Multiple Project setup
 
-- Choose C# Godot:
+If the current workspace contains multiple Godot projects, the extension will prompt you to select the one you want to use with the extension on opening the workspace in VSCode. The selected project can be changed anytime from the status bar or using the `Select Project` command.
 
-![Choose C# Godot](https://user-images.githubusercontent.com/7718100/86488910-dcf96d00-bd62-11ea-8d2f-51a9a6f06c07.png)
+- **Option 1.** Using the status bar:
+  - Click on the Godot project status bar item.\
+    ![Select Project on the status bar](images/setupProjectStatusbar.png)
+  - Select the Godot project you want to use.
 
-- It will generate the following. The `Play in Editor` option works out of the box. For the Launch you need to fix the path to point to the Godot Editor executable path you're using:
+- **Option 2.** Using the `Select Project` command:
+  - Open the Command Palette (<kbd>Ctrl</kbd> + <kbd>P</kbd>).
+  - Select `C# Godot: Select Project`.\
+    ![Select the Select Project command](images/setupProjectCommand.png)
+  - Select the Godot project you want to use.
 
-![Fix editor path](https://user-images.githubusercontent.com/7718100/86488912-dd920380-bd62-11ea-8b3a-91689dc8e629.png)
+### Setup debugging
+
+To debug a Godot project you have to create the [debugger launch configurations](#debugger-launch-configurations). It can be created from the Debug panel or by using the `Generate Assets for Build and Debug` command.
+
+- **Option 1.** Using the `Generate Assets for Build and Debug` command:
+  - Open the Command Palette (<kbd>Ctrl</kbd> + <kbd>P</kbd>).
+  - Select `C# Godot: Generate Assets for Build and Debug`.\
+    ![Select the Generate Assets for Build and Debug command](images/setupDebuggingCommand.png)
+  - If debugger configurations already exist, you will be prompted if you want to override them.
+  - It will have generated the `launch.json` and `tasks.json` files in the `.vscode` directory.\
+    See the [debugger launch configurations](#debugger-launch-configurations), some configurations
+    may require more setup.
+
+- **Option 2.** From the **Debug panel**:
+  - If debugger configurations already exist, remove them or use the
+    `Generate Assets for Build and Debug` command to override them.
+  - Click on `create a launch.json file`.\
+    ![Create launch.json file](images/setupDebuggingCreate.png)
+  - Select `C# Godot`.\
+    ![Select C# Godot](images/setupDebuggingSelectGodot.png)
+  - It will have generated the `launch.json` and `tasks.json` files in the `.vscode` directory.\
+    See the [debugger launch configurations](#debugger-launch-configurations), some configurations
+    may require more setup.
+
+### Additional `Launch` configuration
+
+The `Launch` [debugger configurations](#debugger-launch-configurations) requires additional setup. The _"executable"_ property must be set to a path that points to the Godot executable that will be launched. By default, the extension tries to automatically populate this property with the path to the running Godot instance but if there isn't one it needs to be set manually:
+![Fix editor path](images/setupDebuggingGodotPath.png)
+
+You can also set the `godot.csharp.executablePath` setting to the path that points to the Godot executable that will always be used when generating the debugger configurations so you won't have to set it manually everytime.
+
+The [generated debugger configuration](#setup-debugging) will also create a `tasks.json` that contains a build task for building the project from VSCode which is used by the `Launch` configuration in order to build the project before launching (this is configured in the _"preLaunchTask"_ property of the configuration and can be removed).
+
+The build task uses the Godot executable to build the the C# project (this is configured in the _"command"_ property and must be configured like the _"executable"_ property of the `Launch` configuration if the extension could not find the right path). The build task can be modified to execute the `dotnet` command directly instead or modify the [Godot CLI arguments](https://docs.godotengine.org/en/3.4/getting_started/editor/command_line_tutorial.html#command-line-reference).
 
 ## Debugger launch configurations
 
@@ -42,8 +81,18 @@ By default the extension creates the following launch configurations:
   For this option to work, a running Godot instance must be editing the project.
 - **Launch**\
   Launches the game with a Godot executable for debugging in VSCode.\
-  Before using this option, the value of the _"executable"_ property must be changed
-  to a path that points to the Godot executable that will be launched.
+  This option requires the value of the _"executable"_ property to be set to
+  a path that points to the Godot executable that will be launched.\
+  The `godot.csharp.executablePath` setting can be configured to automatically populate the
+  executable property with its value, if not configured it will be populated with the path
+  to the running Godot instance if there is one, otherwise it will have to be populated manually.
+  See [additional `Launch` configuration](#additional-launch-configuration).
+- **Launch (Select Scene)**\
+  Launches the game with a Godot executable for debugging in VSCode, allowing the user
+  to select which scene to run on every execution.\
+  This option works just like the `Launch` option and also requires the value
+  of the _"executable"_ property to be set.
+  See [additional `Launch` configuration](#additional-launch-configuration).
 - **Attach**\
   Attaches to a running Godot instance that was configured to listen for a debugger connection.
 
