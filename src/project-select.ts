@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
 import * as path from 'path';
 
-export interface ProjectLocation{
+export interface ProjectLocation {
     relativeFilePath: string;
     absoluteFilePath: string;
     relativeProjectPath: string;
@@ -13,9 +13,9 @@ export async function findProjectFiles(): Promise<ProjectLocation[]> {
     return projectFiles.map((x) => {
         return {
             relativeFilePath: vscode.workspace.asRelativePath(x),
-            absoluteFilePath: x.path,
+            absoluteFilePath: x.fsPath,
             relativeProjectPath: path.dirname(vscode.workspace.asRelativePath(x)),
-            absoluteProjectPath: path.dirname(x.path),
+            absoluteProjectPath: path.dirname(x.fsPath),
         };
     });
 }
