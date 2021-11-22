@@ -3,7 +3,7 @@
 	"displayName": "C# Tools for Godot",
 	"description": "Debugger and utilities for working with Godot C# projects",
 	"icon": "icon.png",
-	"version": "0.2.0",
+	"version": "0.2.1",
 	"publisher": "neikeq",
 	"license": "MIT",
 	"repository": {

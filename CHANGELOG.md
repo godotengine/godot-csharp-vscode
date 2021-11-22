@@ -1,5 +1,10 @@
 # Change Log
 
+## 0.2.1
+
+- Fix debugging not working on Windows due to wrong path separators (PR: [#35](https://github.com/godotengine/godot-csharp-vscode/pull/35))
+- Update README with documentation for 0.2.0 features (PR: [#33](https://github.com/godotengine/godot-csharp-vscode/pull/33))
+
 ## 0.2.0
 
 - Add `executableArguments` launch option (PR: [#21](https://github.com/godotengine/godot-csharp-vscode/pull/21))
@@ -16,15 +21,15 @@ Many thanks to @raulsntos and @olestourko
 
 ## 0.1.3
 
-- Fixed communication with the Godot editor not working on Windows
+- Fix communication with the Godot editor not working on Windows
 
 ## 0.1.2
 
-- Fixed missing dependencies
+- Fix missing dependencies
 
 ## 0.1.1
 
-- Added extension icon
+- Add extension icon
 
 ## 0.1.0
 
