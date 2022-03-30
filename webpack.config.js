@@ -14,7 +14,8 @@ const config = {
     path: path.resolve(__dirname, 'dist'),
     filename: 'extension.bundled.js',
     libraryTarget: 'commonjs2',
-    devtoolModuleFilenameTemplate: '../[resource-path]'
+    devtoolModuleFilenameTemplate: '../[resource-path]',
+    hashFunction: 'xxhash64'
   },
   devtool: 'source-map',
   externals: {
