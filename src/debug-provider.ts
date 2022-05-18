@@ -3,7 +3,7 @@ import * as fs from 'fs-extra';
 import {getVscodeFolder} from './vscode-utils';
 import {Configuration} from './configuration';
 import {AssetsGenerator, createDebugConfigurationsArray} from './assets-generator';
-import {findGodotExecutablePath} from './godot-utils';
+import {findGodotExecutablePath, determineGodotVersion} from './godot-utils';
 
 export class GodotMonoDebugConfigProvider implements vscode.DebugConfigurationProvider {
 	private godotProjectPath: string;
@@ -24,16 +24,22 @@ export class GodotMonoDebugConfigProvider implements vscode.DebugConfigurationPr
 			return [];
 		}
 
+		const godotVersion = await determineGodotVersion(folder);
+		if (!godotVersion) {
+			vscode.window.showErrorMessage('Cannot create C# Godot debug configurations. Godot version is unknown or unsupported.');
+			return [];
+		}
+
 		const generator = AssetsGenerator.Create(vscodeFolder);
 
 		// Make sure .vscode folder exists, addTasksJsonIfNecessary will fail to create tasks.json if the folder does not exist.
 		await fs.ensureDir(vscodeFolder);
 
 		// Add a tasks.json
-		await generator.addTasksJsonIfNecessary();
+		await generator.addTasksJsonIfNecessary(godotVersion);
 
-		const godotPath = await findGodotExecutablePath();
-		return createDebugConfigurationsArray(godotPath);
+		const godotPath = await findGodotExecutablePath(godotVersion);
+		return createDebugConfigurationsArray(godotPath, godotVersion);
 	}
 
 	public async resolveDebugConfiguration(

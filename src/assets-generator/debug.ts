@@ -1,21 +1,22 @@
 import * as vscode from 'vscode';
 import * as jsonc from 'jsonc-parser';
 import * as fs from 'fs-extra';
+import * as semver from 'semver';
 import {getFormattingOptions, replaceCommentPropertiesWithComments, updateJsonWithComments} from '../json-utils';
-import {findGodotExecutablePath} from '../godot-utils';
+import {findGodotExecutablePath, GODOT_VERSION_3, GODOT_VERSION_4} from '../godot-utils';
 
-export function createLaunchConfiguration(godotExecutablePath: string | undefined):
+export function createLaunchConfiguration(godotExecutablePath: string | undefined, godotVersion: string):
 	{version: string, configurations: vscode.DebugConfiguration[]}
 {
 	return {
 		version: '2.0.0',
-		configurations: _createDebugConfigurations(godotExecutablePath),
+		configurations: _createDebugConfigurations(godotExecutablePath, godotVersion),
 	};
 }
 
-export function createDebugConfigurationsArray(godotExecutablePath: string | undefined): vscode.DebugConfiguration[]
+export function createDebugConfigurationsArray(godotExecutablePath: string | undefined, godotVersion: string): vscode.DebugConfiguration[]
 {
-	const configurations = _createDebugConfigurations(godotExecutablePath);
+	const configurations = _createDebugConfigurations(godotExecutablePath, godotVersion);
 
 	// Remove comments
 	configurations.forEach(configuration => {
@@ -34,17 +35,27 @@ export function createDebugConfigurationsArray(godotExecutablePath: string | und
 	return configurations;
 }
 
-function _createDebugConfigurations(godotExecutablePath: string | undefined): vscode.DebugConfiguration[]
-{
-	return [
-		createPlayInEditorDebugConfiguration(),
-		createLaunchDebugConfiguration(godotExecutablePath),
-		createLaunchDebugConfiguration(godotExecutablePath, true),
-		createAttachDebugConfiguration(),
-	];
+function _createDebugConfigurations(godotExecutablePath: string | undefined, godotVersion: string): vscode.DebugConfiguration[] {
+	if (semver.intersects(godotVersion, GODOT_VERSION_3)) {
+		return [
+			createPlayInEditorDebugConfigurationForGodot3(),
+			createLaunchDebugConfigurationForGodot3(godotExecutablePath),
+			createLaunchDebugConfigurationForGodot3(godotExecutablePath, true),
+			createAttachDebugConfigurationForGodot3(),
+		];
+	} else if (semver.intersects(godotVersion, GODOT_VERSION_4)) {
+		return [
+			createLaunchDebugConfigurationForGodot4(godotExecutablePath),
+			createLaunchDebugConfigurationForGodot4(godotExecutablePath, true),
+			createAttachDebugConfigurationForGodot4(),
+		];
+	} else {
+		vscode.window.showErrorMessage('Cannot create C# Godot debug configurations. Godot version is unknown or unsupported.');
+		return [];
+	}
 }
 
-export function createPlayInEditorDebugConfiguration(): vscode.DebugConfiguration
+export function createPlayInEditorDebugConfigurationForGodot3(): vscode.DebugConfiguration
 {
 	return {
 		name: 'Play in Editor',
@@ -54,7 +65,7 @@ export function createPlayInEditorDebugConfiguration(): vscode.DebugConfiguratio
 	};
 }
 
-export function createLaunchDebugConfiguration(godotExecutablePath: string | undefined, canSelectScene: boolean = false): vscode.DebugConfiguration
+export function createLaunchDebugConfigurationForGodot3(godotExecutablePath: string | undefined, canSelectScene: boolean = false): vscode.DebugConfiguration
 {
 	godotExecutablePath = godotExecutablePath ?? '<insert-godot-executable-path-here>';
 	return {
@@ -69,12 +80,34 @@ export function createLaunchDebugConfiguration(godotExecutablePath: string | und
 		executableArguments: [
 			'--path',
 			'${workspaceRoot}',
-			...(canSelectScene ? ['${command:SelectLaunchScene}'] : []),
+			...(canSelectScene ? ['${command:godot.csharp.getLaunchScene}'] : []),
 		],
 	};
 }
 
-export function createAttachDebugConfiguration()
+export function createLaunchDebugConfigurationForGodot4(godotExecutablePath: string | undefined, canSelectScene: boolean = false): vscode.DebugConfiguration
+{
+	godotExecutablePath = godotExecutablePath ?? '<insert-godot-executable-path-here>';
+	return {
+		name: `Launch${canSelectScene ? ' (Select Scene)' : ''}`,
+		type: 'coreclr',
+		request: 'launch',
+		preLaunchTask: 'build',
+		program: godotExecutablePath,
+		'OS-COMMENT1': 'See which arguments are available here:',
+		'OS-COMMENT2': 'https://docs.godotengine.org/en/stable/getting_started/editor/command_line_tutorial.html',
+		args: [
+			'--path',
+			'${workspaceRoot}',
+			...(canSelectScene ? ['${command:SelectLaunchScene}'] : []),
+		],
+		cwd: '${workspaceRoot}',
+		stopAtEntry: false,
+		console: 'internalConsole',
+	};
+}
+
+export function createAttachDebugConfigurationForGodot3()
 {
 	return {
 		name: 'Attach',
@@ -85,10 +118,19 @@ export function createAttachDebugConfiguration()
 	};
 }
 
-export async function addLaunchJsonIfNecessary(launchJsonPath: string): Promise<void>
+export function createAttachDebugConfigurationForGodot4()
 {
-	const godotExecutablePath = await findGodotExecutablePath();
-	const launchConfiguration = createLaunchConfiguration(godotExecutablePath);
+	return {
+		name: 'Attach',
+		type: 'coreclr',
+		request: 'attach',
+	};
+}
+
+export async function addLaunchJsonIfNecessary(launchJsonPath: string, godotVersion: string): Promise<void>
+{
+	const godotExecutablePath = await findGodotExecutablePath(godotVersion);
+	const launchConfiguration = createLaunchConfiguration(godotExecutablePath, godotVersion);
 
 	const formattingOptions = getFormattingOptions();
 
