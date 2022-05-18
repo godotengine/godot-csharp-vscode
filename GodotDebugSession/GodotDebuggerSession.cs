@@ -89,12 +89,25 @@ namespace GodotDebugSession
                         string host = "127.0.0.1";
                         int remoteDebugPort = ((IPEndPoint)remoteDebugListener.LocalEndpoint).Port;
 
+                        // Construct the --remote-debug parameter for the found version of Godot
+
+                        var versionCommand = Command.Run(godotStartInfo.GodotExecutablePath, new[] { "--version" }).Result;
+                        string versionOutput = versionCommand.StandardOutput;
+                        int versionFirstDot = versionOutput.IndexOf('.');
+                        if (versionFirstDot == -1 || !int.TryParse(versionOutput.Substring(0, versionFirstDot), out int versionMajor))
+                        {
+                            Logger.Log($"Godot launch request failed: Godot version unrecognized: {versionOutput}.");
+                            Exit();
+                            return;
+                        }
+                        string remoteDebugAddress = versionMajor >= 4 ? $"tcp://{host}:{remoteDebugPort}" : $"{host}:{remoteDebugPort}";
+
                         // Launch Godot to run the game and connect to our remote debugger
 
                         var args = new List<string>()
                         {
                             "--path", workingDir,
-                            "--remote-debug", $"{host}:{remoteDebugPort}",
+                            "--remote-debug", remoteDebugAddress,
                         };
                         args.AddRange(godotStartInfo.ExecutableArguments);
 

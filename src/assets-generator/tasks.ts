@@ -19,7 +19,7 @@ export function createBuildTaskDescription(godotExecutablePath: string | undefin
 		label: 'build',
 		command: godotExecutablePath,
 		type: 'process',
-		args: ['--build-solutions', '--path', '${workspaceRoot}', '--no-window', '-q'],
+		args: ['--build-solutions', '--path', '${workspaceRoot}', '--no-window', '--quit'],
 		problemMatcher: '$msCompile',
 	};
 }

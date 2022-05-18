@@ -225,7 +225,11 @@ export class Client implements Disposable {
         this.logger = logger;
 
         this.projectDir = godotProjectDir;
-        this.projectMetadataDir = path.join(godotProjectDir, '.mono', 'metadata');
+        this.projectMetadataDir = path.join(godotProjectDir, '.godot', 'mono', 'metadata');
+        if (!fs.existsSync(this.projectMetadataDir)) {
+            // Fallback for 3.x projects
+            this.projectMetadataDir = path.join(godotProjectDir, '.mono', 'metadata');
+        }
 
         this.metaFilePath = path.join(this.projectMetadataDir, GodotIdeMetadata.defaultFileName);
     }
