@@ -79,7 +79,7 @@
     </ItemGroup>
     <ItemGroup>
       <PackageReference Include="GodotTools.IdeMessaging" Version="1.1.0" />
-      <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+      <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
       <PackageReference Include="MedallionShell" Version="1.6.2" />
     </ItemGroup>
     <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
