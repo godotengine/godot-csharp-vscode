@@ -372,7 +372,7 @@ export class Client implements Disposable {
     readMetadataFile(): GodotIdeMetadata | undefined {
         const buffer = fs.readFileSync(this.metaFilePath);
         const metaFileContent = buffer.toString('utf-8');
-        const lines = metaFileContent.split('\n');
+        const lines = metaFileContent.replace('\r\n', '\n').split('\n');
 
         if (lines.length < 2) {
             return undefined;
