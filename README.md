@@ -4,7 +4,7 @@ Debugger and utilities for working with Godot C# projects in VSCode.
 
 ## Requirements
 
-**Godot 3.2.2** or greater. Older versions of Godot are not supported.
+**Godot  >= 3.2.2 and < 4.0**. Older versions of Godot or **4.0** and higher are not supported.
 
 ## Features
 
