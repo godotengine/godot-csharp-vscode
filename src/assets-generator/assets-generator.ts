@@ -28,12 +28,12 @@ export class AssetsGenerator {
 		return new AssetsGenerator(vscodeFolder);
 	}
 
-	public async addTasksJsonIfNecessary(): Promise<void> {
-		return addTasksJsonIfNecessary(this.tasksJsonPath);
+	public async addTasksJsonIfNecessary(godotVersion: string): Promise<void> {
+		return addTasksJsonIfNecessary(this.tasksJsonPath, godotVersion);
 	}
 
-	public async addLaunchJsonIfNecessary(): Promise<void> {
-		return addLaunchJsonIfNecessary(this.launchJsonPath);
+	public async addLaunchJsonIfNecessary(godotVersion: string): Promise<void> {
+		return addLaunchJsonIfNecessary(this.launchJsonPath, godotVersion);
 	}
 
 	public async hasExistingAssets(): Promise<boolean> {

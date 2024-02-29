@@ -2,13 +2,20 @@ import * as vscode from 'vscode';
 import * as fs from 'fs-extra';
 import {getVscodeFolder} from './vscode-utils';
 import {AssetsGenerator} from './assets-generator';
+import {determineGodotVersion} from './godot-utils';
 
-export async function addAssets(): Promise<void>
+export async function addAssets(godotProjectDir: string | undefined = undefined): Promise<void>
 {
 	const vscodeFolder = getVscodeFolder();
 	if (!vscodeFolder)
 	{
 		vscode.window.showErrorMessage('Cannot generate C# Godot assets for build and debug. No workspace folder was selected.');
+		return;
+	}
+
+	const godotVersion = await determineGodotVersion(godotProjectDir);
+	if (!godotVersion) {
+		vscode.window.showErrorMessage('Cannot create C# Godot debug configurations. Godot version is unknown or unsupported.');
 		return;
 	}
 
@@ -24,8 +31,8 @@ export async function addAssets(): Promise<void>
 	await fs.ensureDir(vscodeFolder);
 
 	const promises = [
-		generator.addTasksJsonIfNecessary(),
-		generator.addLaunchJsonIfNecessary(),
+		generator.addTasksJsonIfNecessary(godotVersion),
+		generator.addLaunchJsonIfNecessary(godotVersion),
 	];
 
 	await Promise.all(promises);

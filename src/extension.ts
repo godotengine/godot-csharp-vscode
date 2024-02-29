@@ -4,7 +4,7 @@ import * as completion_provider from './completion-provider';
 import * as debug_provider from './debug-provider';
 import * as assets_provider from './assets-provider';
 import { getWorkspaceScenes } from './workspace-utils';
-import { fixPathForGodot } from './godot-utils';
+import { fixPathForGodot, determineGodotVersion, GODOT_VERSION_3 } from './godot-utils';
 import { findProjectFiles, ProjectLocation, promptForProject } from './project-select';
 
 export let client: Client;
@@ -106,25 +106,25 @@ export async function activate(context: vscode.ExtensionContext) {
 	context.subscriptions.push(vscode.commands.registerCommand(commandId, async () => {
 		const project = await promptForProject(); // project.godot
 		if (project !== undefined) {
-			setupProject(project, context);
+			await setupProject(project, context);
 		}
 	}));
 
 	// One project.godot files found. Use it.
 	if (foundProjects.length === 1) {
-		setupProject(foundProjects[0], context);
+		await setupProject(foundProjects[0], context);
 	}
 	// Multiple project.godot files found. Prompt the user for which one they want to use.
 	else {
 		const project = await promptForProject();
 		if (project !== undefined) {
-			setupProject(project, context);
+			await setupProject(project, context);
 		}
 	}
 
 	// Setup generate assets command
 	const generateAssetsCommand = vscode.commands.registerCommand('godot.csharp.generateAssets', async () => {
-		await assets_provider.addAssets();
+		await assets_provider.addAssets(client.getGodotProjectDir());
 	});
 	context.subscriptions.push(generateAssetsCommand);
 
@@ -135,16 +135,22 @@ export async function activate(context: vscode.ExtensionContext) {
 	context.subscriptions.push(getLaunchSceneCommand);
 }
 
-function setupProject(project: ProjectLocation, context: vscode.ExtensionContext) {
+async function setupProject(project: ProjectLocation, context: vscode.ExtensionContext) {
 	const statusBarPath: string = project.relativeProjectPath === '.' ? './' : project.relativeProjectPath;
 	statusBarItem.text = `$(folder) Godot Project: ${statusBarPath}`;
 	// Setup client
 	if (client !== undefined) {
 		client.dispose();
 	}
+	let godotVersion = await determineGodotVersion(project.absoluteProjectPath);
+	if (!godotVersion) {
+		// Fallback to Godot 3
+		godotVersion = GODOT_VERSION_3;
+	}
 	client = new Client(
 		'VisualStudioCode',
 		fixPathForGodot(project.absoluteProjectPath),
+		godotVersion,
 		new MessageHandler(),
 		new Logger(),
 	);

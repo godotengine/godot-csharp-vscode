@@ -3,7 +3,7 @@
 	"displayName": "C# Tools for Godot",
 	"description": "Debugger and utilities for working with Godot C# projects",
 	"icon": "icon.png",
-	"version": "0.2.1",
+	"version": "0.3.0",
 	"publisher": "neikeq",
 	"license": "MIT",
 	"repository": {
@@ -36,32 +36,34 @@
 		"webpack-watch": "webpack --mode development --watch"
 	},
 	"dependencies": {
-		"async-file": "^2.0.2",
-		"chokidar": "^3.4.0",
-		"fs-extra": "^10.0.0",
-		"jsonc-parser": "^3.0.0",
-		"lookpath": "^1.2.1",
-		"promise-socket": "^6.0.3",
-		"vscode-debugprotocol": "^1.40.0"
+		"async-file": "2.0.2",
+		"chokidar": "3.4.0",
+		"fs-extra": "10.0.0",
+		"jsonc-parser": "3.0.0",
+		"lookpath": "1.2.1",
+		"promise-socket": "6.0.3",
+		"semver": "^7.3.8",
+		"vscode-debugprotocol": "1.40.0"
 	},
 	"extensionDependencies": [
 		"ms-dotnettools.csharp",
 		"ms-vscode.mono-debug"
 	],
 	"devDependencies": {
-		"@types/fs-extra": "^9.0.12",
-		"@types/glob": "^7.1.1",
-		"@types/mocha": "^5.2.6",
-		"@types/node": "^16.4.1",
-		"@types/vscode": "^1.62.0",
-		"glob": "^7.1.4",
-		"mocha": "^6.1.4",
-		"ts-loader": "^7.0.5",
-		"tslint": "^5.12.1",
-		"typescript": "^3.3.1",
-		"vsce": "^1.20.0",
-		"webpack": "^5.70.0",
-		"webpack-cli": "^4.9.2"
+		"@types/fs-extra": "9.0.12",
+		"@types/glob": "7.1.1",
+		"@types/mocha": "5.2.6",
+		"@types/node": "16.4.1",
+		"@types/semver": "^7.3.13",
+		"@types/vscode": "1.62.0",
+		"glob": "7.1.4",
+		"mocha": "6.1.4",
+		"ts-loader": "7.0.5",
+		"tslint": "5.12.1",
+		"typescript": "3.9.10",
+		"vsce": "1.20.0",
+		"webpack": "5.70.0",
+		"webpack-cli": "4.9.2"
 	},
 	"breakpoints": [
 		{
@@ -78,7 +80,18 @@
 				"godot.csharp.executablePath": {
 					"type": "string",
 					"default": null,
-					"description": "Path to the Godot engine executable."
+					"description": "Path to the Godot 3 engine executable.",
+					"deprecationMessage": "Use godot3ExecutablePath instead."
+				},
+				"godot.csharp.godot3ExecutablePath": {
+					"type": "string",
+					"default": null,
+					"description": "Path to the Godot 3 engine executable."
+				},
+				"godot.csharp.godot4ExecutablePath": {
+					"type": "string",
+					"default": null,
+					"description": "Path to the Godot 4 engine executable."
 				}
 			}
 		},
@@ -105,7 +118,7 @@
 		"debuggers": [
 			{
 				"type": "godot-mono",
-				"label": "C# Godot",
+				"label": "C# Godot 3",
 				"languages": [
 					"csharp",
 					"fsharp"
@@ -122,8 +135,8 @@
 				},
 				"configurationSnippets": [
 					{
-						"label": "C# Godot: Play in Editor Configuration",
-						"description": "Launch a C# Godot App from the open editor with a debugger.",
+						"label": "C# Godot 3: Play in Editor Configuration",
+						"description": "Launch a C# Godot 3 App from the open editor with a debugger.",
 						"body": {
 							"name": "Play in Editor",
 							"type": "godot-mono",
@@ -132,8 +145,8 @@
 						}
 					},
 					{
-						"label": "C# Godot: Launch Configuration",
-						"description": "Launch a C# Godot App with a debugger.",
+						"label": "C# Godot 3: Launch Configuration",
+						"description": "Launch a C# Godot 3 App with a debugger.",
 						"body": {
 							"name": "Launch",
 							"type": "godot-mono",
@@ -148,8 +161,8 @@
 						}
 					},
 					{
-						"label": "C# Godot: Launch Configuration (Select Scene)",
-						"description": "Launch a C# Godot App with a debugger.",
+						"label": "C# Godot 3: Launch Configuration (Select Scene)",
+						"description": "Launch a C# Godot 3 App with a debugger.",
 						"body": {
 							"name": "Launch (Select Scene)",
 							"type": "godot-mono",
@@ -165,7 +178,7 @@
 						}
 					},
 					{
-						"label": "C# Godot: Attach Configuration",
+						"label": "C# Godot 3: Attach Configuration",
 						"description": "Attach a debugger to a C# Godot App.",
 						"body": {
 							"name": "Attach",
@@ -226,6 +239,62 @@
 						}
 					}
 				}
+			},
+			{
+				"type": "godot-dotnet",
+				"label": "C# Godot 4",
+				"languages": [
+					"csharp",
+					"fsharp"
+				],
+				"configurationSnippets": [
+					{
+						"label": "C# Godot 4: Launch Configuration",
+						"description": "Launch a C# Godot 4 App with a debugger.",
+						"body": {
+							"name": "Launch",
+							"type": "coreclr",
+							"request": "launch",
+							"preLaunchTask": "build",
+							"program": "${1:<insert-godot-executable-path-here>}",
+							"args": [
+								"--path",
+								"${workspaceRoot}"
+							],
+							"cwd": "${workspaceRoot}",
+							"stopAtEntry": false,
+							"console": "internalConsole"
+						}
+					},
+					{
+						"label": "C# Godot 4: Launch Configuration (Select Scene)",
+						"description": "Launch a C# Godot 4 App with a debugger.",
+						"body": {
+							"name": "Launch (Select Scene)",
+							"type": "coreclr",
+							"request": "launch",
+							"preLaunchTask": "build",
+							"program": "${1:<insert-godot-executable-path-here>}",
+							"args": [
+								"--path",
+								"${workspaceRoot}",
+								"${command:godot.csharp.getLaunchScene}"
+							],
+							"cwd": "${workspaceRoot}",
+							"stopAtEntry": false,
+							"console": "internalConsole"
+						}
+					},
+					{
+						"label": "C# Godot 4: Attach Configuration",
+						"description": "Attach a debugger to a C# Godot 4 App.",
+						"body": {
+							"name": "Attach",
+							"type": "coreclr",
+							"request": "attach"
+						}
+					}
+				]
 			}
 		]
 	}

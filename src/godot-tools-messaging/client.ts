@@ -2,8 +2,10 @@ import * as net from 'net';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as chokidar from 'chokidar';
+import * as semver from 'semver';
 import PromiseSocket from 'promise-socket';
 import { Disposable } from 'vscode';
+import {GODOT_VERSION_3, GODOT_VERSION_4} from '../godot-utils';
 
 async function timeout(ms: number) {
     return new Promise(resolve => {
@@ -207,6 +209,7 @@ export class Client implements Disposable {
     identity: string;
     projectDir: string;
     projectMetadataDir: string;
+    godotVersion: string;
     metaFilePath: string;
     messageHandler: IMessageHandler;
     logger: ILogger;
@@ -219,13 +222,18 @@ export class Client implements Disposable {
 
     peer?: Peer;
 
-    constructor(identity: string, godotProjectDir: string, messageHandler: IMessageHandler, logger: ILogger) {
+    constructor(identity: string, godotProjectDir: string, godotVersion: string, messageHandler: IMessageHandler, logger: ILogger) {
         this.identity = identity;
         this.messageHandler = messageHandler;
         this.logger = logger;
 
         this.projectDir = godotProjectDir;
-        this.projectMetadataDir = path.join(godotProjectDir, '.mono', 'metadata');
+        this.godotVersion = godotVersion;
+        if (semver.intersects(godotVersion, GODOT_VERSION_3)) {
+            this.projectMetadataDir = path.join(godotProjectDir, '.mono', 'metadata');
+        } else { // GODOT_VERSION_4+
+            this.projectMetadataDir = path.join(godotProjectDir, '.godot', 'mono', 'metadata');
+        }
 
         this.metaFilePath = path.join(this.projectMetadataDir, GodotIdeMetadata.defaultFileName);
     }
