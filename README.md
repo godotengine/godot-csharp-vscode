@@ -1,5 +1,14 @@
 # C# Tools for Godot
 
+> [!WARNING]
+>
+> **This extension currently does not support Godot 4.x.**
+>
+> However, you can still debug Godot C# projects in Visual Studio Code by installing
+> [Microsoft's C# extension](https://marketplace.visualstudio.com/items?itemName=ms-dotnettools.csharp),
+> then configuring it as described in the
+> [documentation](https://docs.godotengine.org/en/4.0/tutorials/scripting/c_sharp/c_sharp_basics.html#visual-studio-code).
+
 Debugger and utilities for working with Godot C# projects in VSCode.
 
 ## Requirements
